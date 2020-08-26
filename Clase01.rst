@@ -115,9 +115,9 @@ Softwares
 	void main()  {
 	    configuracionInicial();
 
-	    while (1)  {
+	    while ( 1 )  {
 	        LATBbits.LATB0 = ~LATBbits.LATB0;
-	        Delay_ms(1000);
+	        Delay_ms( 1000 );
 	    }
 	}
 
