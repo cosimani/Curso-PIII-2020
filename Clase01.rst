@@ -7,7 +7,7 @@ Clase 01 - PIII 2020
 (Fecha: 26 de agosto)
 
 :Profesores: César Osimani - Martín Salamero
-:Correo: cesarosimani@gmail.com - martin.salamero@gmail.com
+:Correos: cesarosimani@gmail.com - martin.salamero@gmail.com
 :Fecha: 26 de agosto de 2020
 :Regularidad: 
 	- Primer nota parcial (guía de trabajos prácticos de César con Proteus, mikroC y MATLAB)
