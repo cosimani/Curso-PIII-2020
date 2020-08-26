@@ -10,9 +10,9 @@ Clase 01 - PIII 2020
 :Correo: cesarosimani@gmail.com - martin.salamero@gmail.com
 :Fecha: 26 de agosto de 2020
 :Regularidad: 
-	- 2 parciales (resolviendo ejercicios con Proteus y mikroC)
+	- Primer nota parcial (guía de trabajos prácticos de César con Proteus, mikroC y MATLAB)
 
-	- 3er nota (promedio de los prácticos con Martín)
+	- Segunda nota parcial (guía de trabajos prácticos de Martín con MATLAB y Simulink)
 
 	- Proyecto final: Individual o 2 alumnos 
 		
