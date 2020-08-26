@@ -6,7 +6,7 @@ Clase 01 - PIII 2020
 ====================
 (Fecha: 26 de agosto)
 
-:Autor: César Osimani - Martín Salamero
+:Profesores: César Osimani - Martín Salamero
 :Correo: cesarosimani@gmail.com - martin.salamero@gmail.com
 :Fecha: 26 de agosto de 2020
 :Regularidad: 

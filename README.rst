@@ -4,8 +4,7 @@ Guía de estudio de la asignatura Programación III
 Destinado a los estudiantes de la carrera Ing. en Telecomunicaciones de la Universidad Blas Pascal.
 
 
-:Profesor: Ing. César Osimani
-:Profesor: Ing. Martín Salamero
+:Profesores: Ing. César Osimani - Ing. Martín Salamero
 :Asignatura: Programación III
 :Fecha: Agosto a noviembre de 2020
 
