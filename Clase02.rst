@@ -69,7 +69,8 @@ Softwares
 	- Última versión R2020a (marzo de 2020).
 
 
-**Ejercicio:**
+Ejercicio 1
+===========
 
 - Crear un programa "Hola mundo" para el dsPIC30F4013.
 - Escribir una función void configuracionInicial() para configurar el puerto RB0 como salida

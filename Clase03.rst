@@ -111,7 +111,9 @@ Secuencia de interrupción
         }
     }
 
-**Ejercicio:** 
+
+Ejercicio 2
+===========
 
 - Conectar en RB0 y RB1 dos leds. Programar para que cada uno encienda en distintos tiempos. Por ejemplo:
 - El LED en RB0 que encienda y apague cada 250 ms
