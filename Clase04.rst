@@ -2,12 +2,13 @@
 
 .. _rcs_subversion:
 
-Clase 04 - PIII 2019
+Clase 04 - PIII 2020
 ====================
-(Fecha: 30 de agosto)
+(Fecha: 4 de septiembre)
 
 
-**Ejercicio:** 
+Ejercicio 3
+===========
 
 - Crear un programa con lo siguiente:
 - Usar el dsPIC33FJ32MC202 
@@ -17,14 +18,17 @@ Clase 04 - PIII 2019
 - Resolver el problema de no tener un pin para la INT1
 - Ver el siguiente `Link <http://download.mikroe.com/documents/compilers/mikroc/dspic/help/peripheral_pin_select_library.htm>`_
 
-**Ejercicio:** 
+
+Ejercicio 4
+===========
 
 - Regulador de tensión para los dsPIC33F.
 - Alimentación desde un conector USB.
 - Utilizar herramientas de medición para asegurarse de los voltajes obtenidos.
 
 
-**Ejercicio:** 
+Ejercicio 5
+===========
 
 - Alimentar el dsPIC33FJ32MC202.
 - Conectar el Master Clear
@@ -63,7 +67,8 @@ Clase 04 - PIII 2019
 
 .. figure:: images/clase03/calculo_fcy.png
 
-**Ejercicio:** 
+Ejercicio 6
+===========
 
 - Definir las siguientes funciones:
 
