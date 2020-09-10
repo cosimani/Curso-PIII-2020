@@ -6,6 +6,60 @@ Clase 05 - PIII 2019
 ====================
 (Fecha: 4 de septiembre)
 
+
+Ejercicio 4
+===========
+
+- Crear un programa con lo siguiente:
+- Usar el dsPIC33FJ32MC202 
+- Interrupción externa INT1
+- Flanco descendente
+- Pulsador en INT1 con resistencia en Pull up.
+- Resolver el problema de no tener un pin para la INT1
+- Ver el siguiente `Link <http://download.mikroe.com/documents/compilers/mikroc/dspic/help/peripheral_pin_select_library.htm>`_
+
+
+Ejercicio 5
+===========
+
+- Regulador de tensión para los dsPIC33F.
+- Alimentación desde un conector USB.
+- Utilizar herramientas de medición para asegurarse de los voltajes obtenidos.
+
+
+Ejercicio 6
+===========
+
+- Alimentar el dsPIC33FJ32MC202.
+- Conectar el Master Clear
+- Utilizar capacitores de desacoplo
+- Conectar un cristal de cuarzo
+- Grabarle un programa creado anteriormente
+
+**Deseñar en Proteus**
+
+- New Design
+- Component mode (panel izquierdo)
+- P (Pick Device) - permite seleccionar los componentes a utilizar en este proyecto
+	- DSPIC33FJ32MC202
+	- USBCONN
+	- LM317L
+	- A700 (es el prefijo de capacitores electrolíticos de alto valor)
+	- CAP-ELEC - Capacitores electrolíticos generales
+	- POT-HG - Potenciómetro
+	- RES - Resistencia
+	- LED-RED
+	- CRYSTAL
+- Terminals Mode - Permite agregar tierra, entrada, salida, etc.
+	- GROUND
+
+**Regulador de tensión 3.3v (esto para los dsPIC33F)**
+
+.. figure:: images/clase01/regulador.png
+
+
+
+
 .. figure:: images/clase04/manejo_timers.png
 
 **Ejercicio:** Probar cada una de estas afirmaciones (tomamos como ejemplo el Timer2):
