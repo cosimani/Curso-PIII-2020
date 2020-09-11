@@ -7,10 +7,12 @@ Clase 06 - PIII 2020
 (Fecha: 11 de septiembre)
 
 
-**Pinout de los dsPIC que utilizaremos**
+**Pinout del dsPIC que utilizaremos**
 
 .. figure:: images/clase05/dspic33fj32mc202.png
    :target: http://ww1.microchip.com/downloads/en/DeviceDoc/70283K.pdf
+
+**Pinout de otros dsPIC que no utilizaremos**   
 
 .. figure:: images/clase05/dspic30f4013.png
    :target: http://ww1.microchip.com/downloads/en/devicedoc/70138c.pdf
