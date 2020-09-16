@@ -8,6 +8,236 @@ Clase 08 - PIII 2019
 
 
 
+Ejercicio 4
+===========
+
+- Crear un programa con lo siguiente:
+- Usar el dsPIC33FJ32MC202 
+- Interrupción externa INT1
+- Flanco descendente
+- Pulsador en INT1 con resistencia en Pull up.
+- Resolver el problema de no tener un pin para la INT1
+- Ver el siguiente `Link <http://download.mikroe.com/documents/compilers/mikroc/dspic/help/peripheral_pin_select_library.htm>`_
+
+
+Ejercicio 5
+===========
+
+- Regulador de tensión para los dsPIC33F.
+- Alimentación desde un conector USB.
+- Utilizar herramientas de medición para asegurarse de los voltajes obtenidos.
+
+
+Ejercicio 6
+===========
+
+- Alimentar el dsPIC33FJ32MC202.
+- Conectar el Master Clear
+- Utilizar capacitores de desacoplo
+- Conectar un cristal de cuarzo
+- Grabarle un programa creado anteriormente
+
+**Deseñar en Proteus**
+
+- New Design
+- Component mode (panel izquierdo)
+- P (Pick Device) - permite seleccionar los componentes a utilizar en este proyecto
+	- DSPIC33FJ32MC202
+	- USBCONN
+	- LM317L
+	- A700 (es el prefijo de capacitores electrolíticos de alto valor)
+	- CAP-ELEC - Capacitores electrolíticos generales
+	- POT-HG - Potenciómetro
+	- RES - Resistencia
+	- LED-RED
+	- CRYSTAL
+- Terminals Mode - Permite agregar tierra, entrada, salida, etc.
+	- GROUND
+
+**Regulador de tensión 3.3v (esto para los dsPIC33F)**
+
+.. figure:: images/clase01/regulador.png
+
+
+**Ejercicio:** Probar cada una de estas afirmaciones (tomamos como ejemplo el Timer2):
+
+- El Timer2 puede acumular pulsos tanto externos (TCS=1) a través del pin T1CK, como internos (TCS=0) al ritmo de la Frecuencia de instrucciones (Tcy).
+- Acumulador de pulsos altos en TGate: puede contar los pulsos internos (Tcy) sólo cuando el pin externo T2CK esté a nivel alto, lo que permite contar la duración acumulada de una señal a nivel alto. Para seleccionar este modo hay que poner a 1 los bits TCS y TGATE.
+- El interruptor que nos permite encender y apagar el Timer2 es el bit TON. 
+- Los impulsos atraviesan el prescaler donde es dividido a razón de 1:1, 1:8, 1:64 y 1:256 en función de la combinación seleccionada en los bits TCKPS<1:0>.
+- Se incrementa en una unidad el registro TMR2. En función del bit de configuración TSYNC, si su valor es 1 el incremento de dicho registro será sincronizado con una señal externa. Cada vez que se incrementa el registro TMR2, se compara con el registro PR2 y en caso de igualdad se pone a 0 el TMR2 y se señala el bit de interrupción T2IF. El registro PR2 por defecto vale 0xFFFF con lo que el periodo del Timer2 será ese, pero podemos ajustarlo al valor que queramos, lo que nos permite seleccionar una frecuencia de interrupción programable muy útil.
+- Para hacerlos trabajar a 32 bits hay que poner a 1 el bit T32. En este caso, los bits de configuración del Timer de 32 bits serán los del Timer par; es decir, si queremos trabajar con la pareja Timer 2/3 hay que setear los bits del Timer2, incluyendo el bit T32=1.
+- El bit de señalización de fin de periodo será el del Timer impar, en nuestro ejemplo se activará el bit T3IF. En el modo de trabajo a 32 bits, la palabra alta la forma el registro TMR impar y la palabra baja el TMR par.
+
+
+
+Conversor AD
+============	
+
+- Lleva a cabo la digitalización de las señales analógicas externas. 
+- En la familia dsPIC30F hay dos versiones: 10 bits y 12 bits.
+- Hay dos entradas analógicas para establecer una tensión de referencia externa: AVDD y AVSS (Vref+ y Vref-)
+- Para controlar el ADC se usan 6 registros de control de 16 bits: 
+	- ADCON1
+	- ADCON2
+	- ADCON3 sirve para seleccionar el modo del ADC
+	- ADCHS para seleccionar las entradas analógicas
+	- ADPCFG para seleccionar el pin utilizado como entrada analógica y el pin usado como pin de I/O
+	- ADCSSL para seleccionar las entradas analógicas que serán escaneadas
+
+- La conversión se guarda en un buffer de sólo lectura ADBUF0 a ADBUFF (16 palabras de 12 bits)
+
+**Conversor AD de 12 bits**
+
+.. figure:: images/clase04/adc.png
+
+**Una secuencia de conversión**
+
+- El proceso de adquisición de muestras se inicia activando el bit SAMP (este bit está en ADCON1)
+- Cuando el tiempo de conversión es completada, el resultado se carga en el buffer ADBUF0 a ADBUFF. 
+- Al término de la conversión, el bit DONE (que está en ADCON1) y la bandera de interrupción se setean luego del número de muestras definidas por los bits de control SMPI (este bit está en ADCON2)
+
+**Pasos para realizar una conversión AD:**
+
+- Configurar el módulo AD
+	- Configurar los pines como entradas analógicas, referencias de voltaje, y los pines digitales de I/O
+	- Seleccionar un canal de entrada del convertidor AD
+	- Seleccionar un reloj de conversión AD
+	- Seleccionar una fuente de trigger (disparo)
+	- Activar el módulo AD
+
+- Iniciar el muestreo
+- Esperar el tiempo de adquisición de muestras
+- Fin de adquisición, inicia la conversión
+- Esperar que se complete la conversión con el bit DONE
+- Leer el buffer
+	
+
+
+ADC controlando los momentos de muestreo con el Timer2	
+======================================================
+
+.. figure:: images/clase04/ejemplo_adc1.png
+
+.. figure:: images/clase04/ejemplo_adc2.png
+
+**Código fuente**
+
+.. code-block::
+
+	void initADC()  {
+	    ADPCFG = 0xFFFE; // Elije la entrada analógica a convertir en este caso AN0.
+	    // Con cero se indica entrada analógica y con 1 sigue siendo entrada digital.
+
+	    ADCON1bits.ADON = 0;  // ADC Apagado por ahora
+	    ADCON1bits.ADSIDL = 1;  // No trabaja en modo idle
+	    ADCON1bits.FORM = 0b00;  // Formato de salida entero
+	    // Para tomar muestras en forma manual. Porque lo vamos a controlar con timer2
+	    ADCON1bits.SSRC = 0b000;  
+	    // Adquiere muestra cuando el SAMP se pone en 1. SAMP lo controlamos desde el Timer2.
+	    ADCON1bits.ASAM = 0;  
+
+	    ADCON2bits.VCFG = 0b000;  // Referencia con AVdd y AVss
+	    ADCON2bits.SMPI = 0b0000;  // Lanza interrupción luego de tomar n muestras.
+	    // Con SMPI=0b0 -> 1 muestra ; Con SMPI=0b1 -> 2 muestras ; Con SMPI=0b10 -> 3 muestras ; etc.
+
+	    // AD1CON3 no se usa ya que tenemos deshabilitado el cálculo del muestreo con ADCS etc.
+
+	    // Muestreo la entrada analógica AN0 contra el nivel de AVss (AN0 es S/H+ y AVss es S/H-)
+	    ADCHS = 0b0000;  
+
+	    ADCON1bits.ADON = 1;// Habilitamos el A/D
+	}
+
+	void detectarIntT2() org 0x0020  {
+	    IFS0bits.T2IF=0;  // Borramos la bandera de interrupción T2
+
+	    ADCON1bits.DONE = 0;  // Antes de pedir una muestra ponemos en cero
+	    ADCON1bits.SAMP = 1;  // Pedimos una muestra
+
+	    asm nop;
+
+	    ADCON1bits.SAMP = 0;  // Pedimos que retenga la muestra
+	}
+
+	void interrupcionADC() org 0x002a  {
+
+	    LATCbits.LATC14 = !PORTCbits.RC14;  // Para debug y ver si ingresa acá
+
+	    // Almacenamos los 8 bits más significativos
+	    PORTBbits.RB1 = ADCBUF0.B2;
+	    PORTBbits.RB2 = ADCBUF0.B3;
+	    PORTBbits.RB3 = ADCBUF0.B4;
+	    PORTBbits.RB4 = ADCBUF0.B5;
+	    PORTBbits.RB5 = ADCBUF0.B6;
+	    PORTEbits.RE0 = ADCBUF0.B7;
+	    PORTEbits.RE1 = ADCBUF0.B8;
+	    PORTEbits.RE2 = ADCBUF0.B9;
+
+	    IFS0bits.ADIF = 0; // Borramos el flag de interrupciones
+	}
+
+	int main()  {
+
+	    // Elegimos el puerto B y E para la salida digital.
+	    // Ya que no alcanzan los pines para que todo salga por un único puerto
+	    TRISB = 0;
+	    TRISE = 0;
+
+	    TRISCbits.TRISC14 = 0;  // Para debug nomás
+
+	    // Configuramos el módulo ADC
+	    initADC();
+
+	    IEC0bits.ADIE = 1;  // Habilitamos interrupción del A/D
+
+	    // Modo de operación Timer2 - Con el clock interno
+	    T2CON = 0x0000;
+
+	    // Prescaler para timer
+	    // 00 -> 1:1 - 01 -> 1:8 - 10 -> 1:64 - 11 -> 1:256
+	    T2CONbits.TCKPS = 0b01;
+
+	    TMR2 = 0;
+	    PR2 = 7;
+
+	    IEC0bits.T2IE = 1;  // Habilita interrupciones timer2
+
+	    // Arrancamos el timer2
+	    T2CONbits.TON = 1;
+
+	    while( 1 )  {  }
+
+	    return 0;
+	}
+
+Registros
+=========
+
+.. figure:: images/clase04/registro_adc_todo.png
+   :target: http://ww1.microchip.com/downloads/en/devicedoc/70138c.pdf
+
+.. figure:: images/clase04/registro_adc1.png
+   :target: http://ww1.microchip.com/downloads/en/DeviceDoc/70046E.pdf
+	        
+.. figure:: images/clase04/registro_adc2.png
+   :target: http://ww1.microchip.com/downloads/en/DeviceDoc/70046E.pdf
+			
+.. figure:: images/clase04/registro_adc3.png
+   :target: http://ww1.microchip.com/downloads/en/DeviceDoc/70046E.pdf
+			
+.. figure:: images/clase04/registro_adc4.png
+   :target: http://ww1.microchip.com/downloads/en/DeviceDoc/70046E.pdf
+
+.. figure:: images/clase04/registro_adc5.png
+   :target: http://ww1.microchip.com/downloads/en/DeviceDoc/70046E.pdf
+
+.. figure:: images/clase04/registro_adc6.png
+   :target: http://ww1.microchip.com/downloads/en/DeviceDoc/70046E.pdf
+
+
+
+
 Ejemplo: ADC controlando los momentos de muestreo con señal cuadrada externa
 ========
 
