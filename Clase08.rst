@@ -2,72 +2,105 @@
 
 .. _rcs_subversion:
 
-Clase 08 - PIII 2019
+Clase 08 - PIII 2020
 ====================
-(Fecha: 13 de septiembre)
+(Fecha: 18 de septiembre)
 
 
 
-Ejercicio 4
-===========
 
-- Crear un programa con lo siguiente:
-- Usar el dsPIC33FJ32MC202 
-- Interrupción externa INT1
-- Flanco descendente
-- Pulsador en INT1 con resistencia en Pull up.
-- Resolver el problema de no tener un pin para la INT1
-- Ver el siguiente `Link <http://download.mikroe.com/documents/compilers/mikroc/dspic/help/peripheral_pin_select_library.htm>`_
+**¿Cómo visualizamos la señal generada? Con un DAC R-2R**
+
+.. figure:: images/clase07/dac_r_2r.png
+
+.. figure:: images/clase07/dac_proteus.png
+
+**Ejemplo:**
+
+- Generador de señal con dsPIC30F4013
+- Video demostración en: https://www.youtube.com/watch?v=liTtwFMcNQ0
+
+.. code-block:: c
+
+	// Generador de señal para 4013
+
+	int pos = 0;
+	int valorActual = 0;
+
+	int seno[ 40 ] = { 1862,2095,2322,2538,2737,
+	                   2915,3067,3189,3278,3333,
+	                   3351,3333,3278,3189,3067,
+	                   2915,2737,2538,2322,2095,
+	                   1862,1629,1402, 1186,986, 
+	                   809, 657, 535, 445, 391,
+	                   372, 391, 445, 535, 657, 
+	                   809, 986, 1186,1402,1629 };
+
+	void detectarT2() org 0x0020  {
+	    IFS0bits.T2IF = 0;
+
+	    LATCbits.LATC15 = !LATCbits.LATC15;
+
+	    valorActual = seno[ pos ];
+
+	    LATCbits.LATC14 = ( valorActual & 0b0000100000000000 ) >> 11;
+	    LATBbits.LATB2 =  ( valorActual & 0b0000010000000000 ) >> 10;
+	    LATBbits.LATB3 =  ( valorActual & 0b0000001000000000 ) >> 9;
+	    LATBbits.LATB4 =  ( valorActual & 0b0000000100000000 ) >> 8;
+	    LATBbits.LATB5 =  ( valorActual & 0b0000000010000000 ) >> 7;
+	    LATBbits.LATB6 =  ( valorActual & 0b0000000001000000 ) >> 6;
+	    LATBbits.LATB8 =  ( valorActual & 0b0000000000100000 ) >> 5;
+	    LATBbits.LATB9 =  ( valorActual & 0b0000000000010000 ) >> 4;
+	    LATBbits.LATB10 = ( valorActual & 0b0000000000001000 ) >> 3;
+	    LATBbits.LATB11 = ( valorActual & 0b0000000000000100 ) >> 2;
+	    LATBbits.LATB12 = ( valorActual & 0b0000000000000010 ) >> 1;
+	    LATCbits.LATC13 = ( valorActual & 0b0000000000000001 ) >> 0;
+
+	    pos = pos + 1;
+
+	    if ( pos >= 40 )  {
+	        pos = 0;
+	    }
+	}
+
+	void config_puertos()  {
+
+	    TRISCbits.TRISC14 = 0;  // Bit mas significativo de la senal generada
+	    TRISBbits.TRISB2 = 0;
+	    TRISBbits.TRISB3 = 0;
+	    TRISBbits.TRISB4 = 0;
+	    TRISBbits.TRISB5 = 0;
+	    TRISBbits.TRISB6 = 0;
+	    TRISBbits.TRISB8 = 0;
+	    TRISBbits.TRISB9 = 0;
+	    TRISBbits.TRISB10 = 0;
+	    TRISBbits.TRISB11 = 0;
+	    TRISBbits.TRISB12 = 0;
+	    TRISCbits.TRISC13 = 0;  // Bit menos significativo de la senal generada
+
+	    TRISCbits.TRISC15 = 0;  // Debug Timer 2
+	}
+
+	void config_T2()  {
+	    T2CONbits.TCKPS = 0b00;  // prescaler = 1:1
+	    PR2 = 1250;  // Genera interrupcion del Timer 2 a 4kHz
+
+	    IEC0bits.T2IE = 1;
+	}
+
+	int main()  {
+	    config_puertos();
+	    config_T2();
+
+	    T2CONbits.TON = 1;
+
+	    while( 1 )  {
+	    }
+
+	    return 0;
+	}
 
 
-Ejercicio 5
-===========
-
-- Regulador de tensión para los dsPIC33F.
-- Alimentación desde un conector USB.
-- Utilizar herramientas de medición para asegurarse de los voltajes obtenidos.
-
-
-Ejercicio 6
-===========
-
-- Alimentar el dsPIC33FJ32MC202.
-- Conectar el Master Clear
-- Utilizar capacitores de desacoplo
-- Conectar un cristal de cuarzo
-- Grabarle un programa creado anteriormente
-
-**Deseñar en Proteus**
-
-- New Design
-- Component mode (panel izquierdo)
-- P (Pick Device) - permite seleccionar los componentes a utilizar en este proyecto
-	- DSPIC33FJ32MC202
-	- USBCONN
-	- LM317L
-	- A700 (es el prefijo de capacitores electrolíticos de alto valor)
-	- CAP-ELEC - Capacitores electrolíticos generales
-	- POT-HG - Potenciómetro
-	- RES - Resistencia
-	- LED-RED
-	- CRYSTAL
-- Terminals Mode - Permite agregar tierra, entrada, salida, etc.
-	- GROUND
-
-**Regulador de tensión 3.3v (esto para los dsPIC33F)**
-
-.. figure:: images/clase01/regulador.png
-
-
-**Ejercicio:** Probar cada una de estas afirmaciones (tomamos como ejemplo el Timer2):
-
-- El Timer2 puede acumular pulsos tanto externos (TCS=1) a través del pin T1CK, como internos (TCS=0) al ritmo de la Frecuencia de instrucciones (Tcy).
-- Acumulador de pulsos altos en TGate: puede contar los pulsos internos (Tcy) sólo cuando el pin externo T2CK esté a nivel alto, lo que permite contar la duración acumulada de una señal a nivel alto. Para seleccionar este modo hay que poner a 1 los bits TCS y TGATE.
-- El interruptor que nos permite encender y apagar el Timer2 es el bit TON. 
-- Los impulsos atraviesan el prescaler donde es dividido a razón de 1:1, 1:8, 1:64 y 1:256 en función de la combinación seleccionada en los bits TCKPS<1:0>.
-- Se incrementa en una unidad el registro TMR2. En función del bit de configuración TSYNC, si su valor es 1 el incremento de dicho registro será sincronizado con una señal externa. Cada vez que se incrementa el registro TMR2, se compara con el registro PR2 y en caso de igualdad se pone a 0 el TMR2 y se señala el bit de interrupción T2IF. El registro PR2 por defecto vale 0xFFFF con lo que el periodo del Timer2 será ese, pero podemos ajustarlo al valor que queramos, lo que nos permite seleccionar una frecuencia de interrupción programable muy útil.
-- Para hacerlos trabajar a 32 bits hay que poner a 1 el bit T32. En este caso, los bits de configuración del Timer de 32 bits serán los del Timer par; es decir, si queremos trabajar con la pareja Timer 2/3 hay que setear los bits del Timer2, incluyendo el bit T32=1.
-- El bit de señalización de fin de periodo será el del Timer impar, en nuestro ejemplo se activará el bit T3IF. En el modo de trabajo a 32 bits, la palabra alta la forma el registro TMR impar y la palabra baja el TMR par.
 
 
 
