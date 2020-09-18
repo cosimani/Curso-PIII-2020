@@ -7,8 +7,6 @@ Clase 08 - PIII 2020
 (Fecha: 18 de septiembre)
 
 
-
-
 **¿Cómo visualizamos la señal generada? Con un DAC R-2R**
 
 .. figure:: images/clase07/dac_r_2r.png
@@ -102,4 +100,8 @@ Clase 08 - PIII 2020
 
 
 
+Ejercicio:
+==========
 
+- Colocar un pulsador para usar INT0 (interrupción externa 0) con flanco ascendente
+- Cada vez que se pulse, modificar la frecuencia de la señal generada entre 100 Hz y 150 Hz
