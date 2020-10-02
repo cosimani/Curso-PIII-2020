@@ -6,7 +6,7 @@ Clase 11 - PIII 2020
 ====================
 (Fecha: 2 de octubre)
 
-Revisión de las trabajos prácticos
+Revisión de los trabajos prácticos
 ==================================
 
 
