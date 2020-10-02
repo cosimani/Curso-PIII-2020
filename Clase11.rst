@@ -21,7 +21,7 @@ ADC controlando los momentos de muestreo con el Timer2
 
 .. code-block::
 
-	void initADC()  {
+	void config_adc()  {
 	    ADPCFG = 0xFFFE; // Elije la entrada analógica a convertir en este caso AN0.
 	    // Con cero se indica entrada analógica y con 1 sigue siendo entrada digital.
 
@@ -83,7 +83,7 @@ ADC controlando los momentos de muestreo con el Timer2
 	    TRISCbits.TRISC14 = 0;  // Para debug nomás
 
 	    // Configuramos el módulo ADC
-	    initADC();
+	    config_adc();
 
 	    IEC0bits.ADIE = 1;  // Habilitamos interrupción del A/D
 
@@ -106,9 +106,17 @@ ADC controlando los momentos de muestreo con el Timer2
 
 	    return 0;
 	}
+
+
+Ejercicio:
+==========
+
+- Adaptarlo para el dsPIC33FJ32MC202
 	
-Ejemplo
-^^^^^^^
+
+
+Otro ejemplo
+============
 
 .. figure:: images/clase06/primer_parcial_1.png
    :target: images/clase06/primer_parcial_1.pdf
