@@ -87,9 +87,3 @@ Ejercicio:
 	}
 
 
-
-**Práctico sobre modulación en amplitud**
-
-.. figure:: images/clase07/am1.png
-
-.. figure:: images/clase07/am2.png
