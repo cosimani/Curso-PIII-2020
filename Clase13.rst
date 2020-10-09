@@ -12,6 +12,7 @@ Clase 13 - PIII 2020
 
 * `dsPIC33FJ32MC202 - ADC más detallado <http://ww1.microchip.com/downloads/en/DeviceDoc/70183D.pdf>`_
 
+$e^{i \pi} = -1$
 
 ADC automático para dsPIC30F4013
 ================================
