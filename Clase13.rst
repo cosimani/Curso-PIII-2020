@@ -17,6 +17,18 @@ ADC automático para dsPIC33FJ32MC202
 
 .. figure:: images/clase13/adc_registros.jpg
 
+
+**Tiempo necesario para la conversión**
+
+- ADC de 10 bits - Tconv = 12 Tad
+- ADC de 12 bits - Tconv = 14 Tad
+
+**Período de clock del ADC (no es el período de muestreo)**
+
+- Tad = Tcy * (ADCS + 1)
+
+
+
 .. figure:: images/clase08/adc_auto_2.png
 
 .. figure:: images/clase08/adc_auto_3.png
