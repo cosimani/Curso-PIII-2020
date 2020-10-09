@@ -6,6 +6,18 @@ Clase 13 - PIII 2020
 ====================
 (Fecha: 9 de octubre)
 
+**Accesos a las hojas de datos**
+
+* `dsPIC33FJ32MC202 - pinout - Interrupciones (pág. 73) - ADC (pág. 203) - TImers <http://ww1.microchip.com/downloads/en/DeviceDoc/70283K.pdf>`_
+
+
+
+
+
+
+
+
+
 ADC automático para dsPIC30F4013
 ================================
 
