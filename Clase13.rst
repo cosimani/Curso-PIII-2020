@@ -12,19 +12,6 @@ Clase 13 - PIII 2020
 
 * `dsPIC33FJ32MC202 - ADC más detallado <http://ww1.microchip.com/downloads/en/DeviceDoc/70183D.pdf>`_
 
-## Solution
-So the solution would be to insert this code in Markdown files:
-
-```markdown
-<img src="https://render.githubusercontent.com/render/math?math=e^{i \pi} = -1">
-```
-and such an image would be rendered as <img src="https://render.githubusercontent.com/render/math?math=e^{i \pi} = -1">.
-
-This is more clumsy than just `$e^{i \pi} = -1$`, but it is still possible to write the formula by hand directly to the Markdown file this way.
-
-Note that this syntax for image insertion would not work because the URL contains spaces:
-
-
 ADC automático para dsPIC30F4013
 ================================
 
