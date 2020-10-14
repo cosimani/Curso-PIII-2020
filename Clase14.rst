@@ -179,13 +179,6 @@ Programación de filtros
 	}
 
 
-
-**Material extra de consulta sobre filtros**		
-
-.. figure:: images/clase08/portada-material-consulta-filtros.png
-	:target: images/clase08/material-consulta-filtros.pdf
-
-
 Ejercicio:
 =========
 
