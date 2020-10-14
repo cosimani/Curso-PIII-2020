@@ -531,3 +531,157 @@ Ejemplo 2:
 
 
 .. figure:: images/clase14/Filtro_a_manopla.BMP
+
+
+
+Ejemplo 3:
+==========
+
+.. code-block:: c
+
+	const unsigned BUFFFER_SIZE  = 32;
+	const unsigned FILTER_ORDER  = 30;
+
+	const unsigned COEFF_PB30Hz_1kHz[ FILTER_ORDER + 1 ] = {
+	    0x0022, 0x0041, 0x007B, 0x00E1, 0x0182, 0x0267,
+	    0x0393, 0x0500, 0x06A1, 0x0862, 0x0A27, 0x0BD3,
+	    0x0D47, 0x0E67, 0x0F1E, 0x0F5C, 0x0F1E, 0x0E67,
+	    0x0D47, 0x0BD3, 0x0A27, 0x0862, 0x06A1, 0x0500,
+	    0x0393, 0x0267, 0x0182, 0x00E1, 0x007B, 0x0041,
+	    0x0022 };
+
+	const unsigned COEFF_PA80Hz_1kHz[ FILTER_ORDER + 1 ] = {
+	      0xFFCB, 0xFFD2, 0xFFE8, 0x0024, 0x0097, 0x0134,
+	      0x01C5, 0x01EE, 0x0143, 0xFF6B, 0xFC50, 0xF830,
+	      0xF3A3, 0xEF7C, 0xEC92, 0x6B85, 0xEC92, 0xEF7C,
+	      0xF3A3, 0xF830, 0xFC50, 0xFF6B, 0x0143, 0x01EE,
+	      0x01C5, 0x0134, 0x0097, 0x0024, 0xFFE8, 0xFFD2,
+	      0xFFCB};
+
+	unsigned inext;                       // Input buffer index
+	ydata unsigned input[ BUFFFER_SIZE ];   // Input buffer, must be in Y data space
+
+	#define FRECUENCIA_MUESTREO 1000
+
+	void config_puertos()  {
+
+	    TRISAbits.TRISA0 = 1;  // Entrada AN0
+	    
+	    TRISBbits.TRISB12 = 1;  // Para aplicar o no algun filtro
+	    TRISBbits.TRISB15 = 1;  // HIGH para Pasa bajos y LOW para Pasa altos
+
+	    TRISBbits.TRISB9 = 0;  // Mas significativo
+	    TRISBbits.TRISB8 = 0;
+	    TRISBbits.TRISB7 = 0;
+	    TRISBbits.TRISB6 = 0;
+	    TRISBbits.TRISB5 = 0;
+	    TRISBbits.TRISB4 = 0;
+	    TRISBbits.TRISB3 = 0;
+	    TRISBbits.TRISB2 = 0;
+	    TRISBbits.TRISB1 = 0;
+	    TRISBbits.TRISB0 = 0;  // Menos significativo
+
+	    TRISBbits.TRISB14 = 0;  // debug_timer
+	    TRISBbits.TRISB15 = 0;  // debug_adc
+	}
+
+	void config_timer2()  {
+	    PR2 = 1 / ( FRECUENCIA_MUESTREO * 0.0000002 );
+	}
+
+	void config_adc()  {
+	    ADPCFG = 0xFFFE; // AN0 como entrada analogica
+
+	    // Muestreo la entrada analogica AN0
+	    AD1CHS0 = 0b0000;
+
+	    AD1CON1bits.AD12B = 0;  // ADC de 10 bits
+	    AD1CON1bits.FORM = 0b00;  // Formato de salida entero
+
+	    IEC0bits.AD1IE = 1;
+	}
+
+	void interrupcion_timer2() org 0x0022  {
+	    IFS0bits.T2IF = 0;
+
+	    LATBbits.LATB14 = ~LATBbits.LATB14;  // debug_timer
+
+	    AD1CON1bits.DONE = 0;  // Antes de pedir una muestra ponemos en cero
+	    AD1CON1bits.SAMP = 1;  // Pedimos una muestra
+
+	    asm nop;  // Tiempo que debemos esperar para que tome una muestra
+
+	    AD1CON1bits.SAMP = 0;  // Pedimos que retenga la muestra
+	}
+
+	void interrupcion_adc() org 0x002e  {
+	    unsigned valor_filtrado;
+
+	    IFS0bits.AD1IF = 0;
+
+	    LATBbits.LATB15 = ~LATBbits.LATB15;  // debug_adc
+	    
+	    //RB12 para habilitar filtros
+	    if( PORTBbits.RB12 == 1 )  {
+	    
+	        input[ inext ] = ADCBUF0;                 // Fetch sample
+	        
+	        if( PORTBbits.RB15 == 1 )  {
+	            valor_filtrado = FIR_Radix( FILTER_ORDER + 1,  // Filter order
+	                                        COEFF_PB30Hz_1kHz, // b coefficients of the filter
+	                                        BUFFFER_SIZE,      // Input buffer length
+	                                        input,             // Input buffer
+	                                        inext );           // Current sample
+	        }
+	        else  {
+	            valor_filtrado = FIR_Radix( FILTER_ORDER + 1,  // Filter order
+	                                        COEFF_PA80Hz_1kHz, // b coefficients of the filter
+	                                        BUFFFER_SIZE,      // Input buffer length
+	                                        input,             // Input buffer
+	                                        inext );           // Current sample
+	        }
+
+	        inext = ( inext + 1 ) & ( BUFFFER_SIZE - 1 );  // inext = (inext + 1) mod BUFFFER_SIZE;
+	        
+	        valor_filtrado = valor_filtrado;
+
+	        LATBbits.LATB9 = ( (unsigned int)valor_filtrado & 0b0000001000000000 ) >> 9;
+	        LATBbits.LATB8 = ( (unsigned int)valor_filtrado & 0b0000000100000000 ) >> 8;
+	        LATBbits.LATB7 = ( (unsigned int)valor_filtrado & 0b0000000010000000 ) >> 7;
+	        LATBbits.LATB6 = ( (unsigned int)valor_filtrado & 0b0000000001000000 ) >> 6;
+	        LATBbits.LATB5 = ( (unsigned int)valor_filtrado & 0b0000000000100000 ) >> 5;
+	        LATBbits.LATB4 = ( (unsigned int)valor_filtrado & 0b0000000000010000 ) >> 4;
+	        LATBbits.LATB3 = ( (unsigned int)valor_filtrado & 0b0000000000001000 ) >> 3;
+	        LATBbits.LATB2 = ( (unsigned int)valor_filtrado & 0b0000000000000100 ) >> 2;
+	        LATBbits.LATB1 = ( (unsigned int)valor_filtrado & 0b0000000000000010 ) >> 1;
+	        LATBbits.LATB0 = ( (unsigned int)valor_filtrado & 0b0000000000000001 ) >> 0;
+	    }
+	    else  {
+	        LATBbits.LATB9 = ADCBUF0.B9;
+	        LATBbits.LATB8 = ADCBUF0.B8;
+	        LATBbits.LATB7 = ADCBUF0.B7;
+	        LATBbits.LATB6 = ADCBUF0.B6;
+	        LATBbits.LATB5 = ADCBUF0.B5;
+	        LATBbits.LATB4 = ADCBUF0.B4;
+	        LATBbits.LATB3 = ADCBUF0.B3;
+	        LATBbits.LATB2 = ADCBUF0.B2;
+	        LATBbits.LATB1 = ADCBUF0.B1;
+	        LATBbits.LATB0 = ADCBUF0.B0;
+	    }
+
+	}
+
+	void main()  {
+
+	    config_puertos();
+	    config_timer2();
+	    config_adc();
+
+	    IEC0bits.AD1IE = 1;
+	    IEC0bits.T2IE = 1;
+
+	    AD1CON1bits.ADON = 1;
+	    T2CONbits.TON = 1;
+
+	    while( 1 )  {  }
+	}
