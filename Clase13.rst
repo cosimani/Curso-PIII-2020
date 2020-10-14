@@ -36,3 +36,15 @@ Ejercicio:
 - Adaptar el ejercicio de la clase anterior para usar ADC automático
 
 
+Cálculos:
+========
+
+.. figure:: images/clase13/adc_automatico_ejercicio_1.png
+
+.. figure:: images/clase13/adc_automatico_ejercicio_2.png
+
+**Proyecto Proteus y mikroC en Teams**
+
+
+
+
