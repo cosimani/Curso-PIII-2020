@@ -326,3 +326,208 @@ Ejemplo 1:
 	}
 
 .. figure:: images/clase14/Filtro_a_mano.BMP
+
+
+Ejemplo 2:
+==========
+
+.. code-block:: c
+
+	// dsPIC33FJ32MC202
+
+	// Filtro FIR pasa bajos
+
+	// ADC
+	//      10 bits / AN0 / AVdd y AVss / Muestreado con Timer 2
+
+	#define FRECUENCIA_MUESTREO 3000
+	#define FRECUENCIA_CORTE 150
+	#define M 17
+
+	int estado;  // 0 - sin filtro / 1 - con / 2 - cresta positiva / vuelve a 0
+
+	float h[ M ];
+	float x[ M ];
+
+	void calcularCoeficientes()  {
+	    int n;
+
+	    for ( n = - ( M - 1 ) / 2 ; n <= ( ( M - 1 ) / 2 ) ; n++ )  {
+	        if ( n == 0 )  {
+	            h[ n ] = 2 * FRECUENCIA_CORTE / FRECUENCIA_MUESTREO;
+	        }
+	        else  {
+	            h[ n ] = sin( 2 * 3.14159 * FRECUENCIA_CORTE * n / FRECUENCIA_MUESTREO ) / ( 3.14159 * n );
+	        }
+	    }
+	}
+
+	void config_puertos()  {
+
+	    TRISAbits.TRISA0 = 1;  // Entrada AN0
+	    
+	    TRISBbits.TRISB7 = 1;  // Pulsador en INT0
+
+	    TRISBbits.TRISB9 = 0;  // Mas significativo
+	    TRISBbits.TRISB8 = 0;
+	    TRISBbits.TRISB10 = 0;
+	    TRISBbits.TRISB6 = 0;
+	    TRISBbits.TRISB5 = 0;
+	    TRISBbits.TRISB4 = 0;
+	    TRISBbits.TRISB3 = 0;
+	    TRISBbits.TRISB2 = 0;
+	    TRISBbits.TRISB1 = 0;
+	    TRISBbits.TRISB0 = 0;  // Menos significativo
+
+	    TRISBbits.TRISB14 = 0;  // debug_timer
+	    TRISBbits.TRISB12 = 0;  // debug_adc
+	    
+	    TRISBbits.TRISB15 = 0;
+	}
+
+	void config_timer2()  {
+	    PR2 = 1 / ( FRECUENCIA_MUESTREO * 0.0000002 );
+	}
+
+	void config_adc()  {
+
+	    ADPCFG = 0xFFFE; // AN0 como entrada analogica
+
+	    // Muestreo la entrada analogica AN0
+	    AD1CHS0 = 0b0000;
+
+	    AD1CON1bits.AD12B = 0;  // ADC de 10 bits
+	    AD1CON1bits.FORM = 0b00;  // Formato de salida entero
+	}
+
+	void interrupcion_timer2() org 0x0022  {
+	    IFS0bits.T2IF = 0;
+
+	    LATBbits.LATB14 = ~LATBbits.LATB14;  // debug_timer
+
+	    AD1CON1bits.DONE = 0;  // Antes de pedir una muestra ponemos en cero
+	    AD1CON1bits.SAMP = 1;  // Pedimos una muestra
+
+	    asm nop;  // Tiempo que debemos esperar para que tome una muestra
+
+	    AD1CON1bits.SAMP = 0;  // Pedimos que retenga la muestra
+	}
+
+	// Con un pulsador en INT0 hacer:
+	// ni bien enciende: Salida sin filtro
+	// pulsando una vez: Con el filtro
+	// pulsando otra vez: Solo cresta positiva (sin filtro)
+	// pulsando otra vez: Vuelve al estado sin filtro
+
+	void interrupcion_adc() org 0x002e  {
+	    int k;
+	    float yn;
+	    float valor_filtrado;
+	    int valor_adc;
+
+	    IFS0bits.AD1IF = 0;
+
+	    LATBbits.LATB12 = ~LATBbits.LATB12;  // debug_adc
+	    
+	    if ( estado == 0 )  {
+	        valor_adc = ADC1BUF0;
+	        
+	        LATBbits.LATB15 = 1;
+	        
+	        LATBbits.LATB9 = ( valor_adc & 0b0000001000000000 ) >> 9;
+	        LATBbits.LATB8 = ( valor_adc & 0b0000000100000000 ) >> 8;
+	        LATBbits.LATB10 =( valor_adc & 0b0000000010000000 ) >> 7;
+	        LATBbits.LATB6 = ( valor_adc & 0b0000000001000000 ) >> 6;
+	        LATBbits.LATB5 = ( valor_adc & 0b0000000000100000 ) >> 5;
+	        LATBbits.LATB4 = ( valor_adc & 0b0000000000010000 ) >> 4;
+	        LATBbits.LATB3 = ( valor_adc & 0b0000000000001000 ) >> 3;
+	        LATBbits.LATB2 = ( valor_adc & 0b0000000000000100 ) >> 2;
+	        LATBbits.LATB1 = ( valor_adc & 0b0000000000000010 ) >> 1;
+	        LATBbits.LATB0 = ( valor_adc & 0b0000000000000001 ) >> 0;
+	    }
+	    else if( estado == 1 )  {
+	    
+	        for ( k = ( M - 1 ) ; k >= 1 ; k-- )  {
+	            x[ k ] = x[ k - 1 ];
+	        }
+
+	        x[ 0 ] = ( ( float )ADC1BUF0 );
+
+	        yn = 0;
+
+	        for ( k = 0 ; k < M ; k++ )  {
+	            yn += h[ k ] * x[ k ];  // yn = yn + h[ k ] * x[ k ];
+	        }
+
+	        valor_filtrado = yn;
+	    
+	        LATBbits.LATB9 = ( (unsigned int)valor_filtrado & 0b0000001000000000 ) >> 9;
+	        LATBbits.LATB8 = ( (unsigned int)valor_filtrado & 0b0000000100000000 ) >> 8;
+	        LATBbits.LATB10 = ( (unsigned int)valor_filtrado & 0b0000000010000000 ) >> 7;
+	        LATBbits.LATB6 = ( (unsigned int)valor_filtrado & 0b0000000001000000 ) >> 6;
+	        LATBbits.LATB5 = ( (unsigned int)valor_filtrado & 0b0000000000100000 ) >> 5;
+	        LATBbits.LATB4 = ( (unsigned int)valor_filtrado & 0b0000000000010000 ) >> 4;
+	        LATBbits.LATB3 = ( (unsigned int)valor_filtrado & 0b0000000000001000 ) >> 3;
+	        LATBbits.LATB2 = ( (unsigned int)valor_filtrado & 0b0000000000000100 ) >> 2;
+	        LATBbits.LATB1 = ( (unsigned int)valor_filtrado & 0b0000000000000010 ) >> 1;
+	        LATBbits.LATB0 = ( (unsigned int)valor_filtrado & 0b0000000000000001 ) >> 0;
+	    }
+	    else if( estado == 2 )  {
+	    
+	        valor_adc = ADC1BUF0 - 512;
+
+	        if ( valor_adc <= 0 )  {
+	            valor_adc = 0;
+	        }
+
+	        LATBbits.LATB9 = ( valor_adc & 0b0000001000000000 ) >> 9;
+	        LATBbits.LATB8 = ( valor_adc & 0b0000000100000000 ) >> 8;
+	        LATBbits.LATB10 =( valor_adc & 0b0000000010000000 ) >> 7;
+	        LATBbits.LATB6 = ( valor_adc & 0b0000000001000000 ) >> 6;
+	        LATBbits.LATB5 = ( valor_adc & 0b0000000000100000 ) >> 5;
+	        LATBbits.LATB4 = ( valor_adc & 0b0000000000010000 ) >> 4;
+	        LATBbits.LATB3 = ( valor_adc & 0b0000000000001000 ) >> 3;
+	        LATBbits.LATB2 = ( valor_adc & 0b0000000000000100 ) >> 2;
+	        LATBbits.LATB1 = ( valor_adc & 0b0000000000000010 ) >> 1;
+	        LATBbits.LATB0 = ( valor_adc & 0b0000000000000001 ) >> 0;
+	    
+	    }
+	    else  {
+
+	    }
+	}
+
+	void interrupcion_int0() org 0x0014  {
+
+	    IFS0bits.INT0IF = 0;
+
+	    estado += 1;
+	    
+	    if ( estado > 2 )  {
+	        estado = 0;
+	    }
+	}
+
+	void main()  {
+
+	    calcularCoeficientes();
+	    
+	    config_puertos();
+	    config_timer2();
+	    config_adc();
+	    
+	    estado = 0;
+
+	    IEC0bits.AD1IE = 1;
+	    IEC0bits.T2IE = 1;
+	    IEC0bits.INT0IE = 1;
+
+	    AD1CON1bits.ADON = 1;
+	    T2CONbits.TON = 1;
+
+	    while( 1 )  {  }
+	}
+
+
+
+.. figure:: images/clase14/Filtro_a_manopla.BMP
