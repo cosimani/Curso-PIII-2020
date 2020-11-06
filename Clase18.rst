@@ -2,10 +2,11 @@
 
 .. _rcs_subversion:
 
-Clase 18 - PIII 2019
+Clase 18 - PIII 2020
 ====================
-(Fecha: 23 de octubre)
+(Fecha: 6 de noviembre)
 
 
-Primer parcial
-==============
+Análisis de código en MATLAB
+============================
+
