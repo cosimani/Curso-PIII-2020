@@ -2,7 +2,16 @@
 
 .. _rcs_subversion:
 
-Clase 20 - PIII 2019
+Clase 20 - PIII 2020
 ====================
-(Fecha: 1 de noviembre)
+(Fecha: 13 de noviembre)
+
+Análisis de teoría para resolver TP3
+====================================
+
+
+Análisis de un algoritmo para convertir a Q15
+=============================================
+
+
 
