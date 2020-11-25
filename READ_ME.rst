@@ -6,8 +6,8 @@ Clase 25
 ========
 
 **Temas que no se incluyeron en este año de pandemia por no poder usar placas de desarrollo en Laboratorio**
+**Reemplazado por MATALB**
 
-<!--
 
 **Transformada de Fourier**
 
@@ -968,7 +968,3 @@ Grabación de dsPIC con Pickit 3
 
 
 
-
-
-
---!>
