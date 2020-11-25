@@ -28,9 +28,15 @@ Consideraciones
 :Ideas para trabajo final:
  	- Herramienta GUI que muestre el funcionamiento de filtros sobre las señales que el usuario pueda ingresar y que la herramienta ya tenga predefinidas, no únicamente de audio (gráficas espectrales, en tiempo, ingreso de parámetros).
 	- Efectos y `análisis <https://www.youtube.com/watch?v=KhDaL-uXkfI>`_ de audio en tiempo real.
-	- Paleta de efectos para instrumentos musicales, mostrando gráficas espectrales, en tiempo, parámetros).
+	- Paleta de efectos para instrumentos musicales (`wha-wha <https://www.youtube.com/watch?v=QJxaM4sA9N8>`_ y otros), mostrando gráficas espectrales, en tiempo, parámetros).
 	- Distorsión de la voz en tiempo real para hablar sin ser reconocido
-	- Ecualizador y eliminador de ruidos
+	- `Ecualizador <https://www.youtube.com/watch?v=3eSvtGJntac>`_ y eliminador de ruidos
+	
+
+
+
+
+
 	
 
 
