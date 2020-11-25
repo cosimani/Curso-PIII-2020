@@ -2,10 +2,10 @@
 
 .. _rcs_subversion:
 
-Clase 25 - PIII 2019
-====================
-(Fecha: 22 de noviembre)
+Clase 25
+========
 
+**Temas que no se incluyeron en este año de pandemia por no poder usar placas de desarrollo en Laboratorio**
 
 
 **Transformada de Fourier**
