@@ -15,6 +15,14 @@ Definición de trabajos finales
 * `Rúbrica para proyecto sin GUI <https://docs.google.com/spreadsheets/d/1ylz3_CGlPlmrZZ7w-FYjh9n87bkkOPETddaguxrtu-I/edit?usp=sharing>`_
 
 
+Consideraciones
+^^^^^^^^^^^^^^^
+
+- Individual o 2 alumnos
+- Revisar las rúbricas para tener en cuenta mcriterios de evaluación
+- Informe, presentación oral, preguntas finales
+- Recomendable mostrar avances para ir definiendo alcances
+- Entrega anticipada (2 días antes de la fecha de examen) para disponer tiempo para revisión
 
 
 
