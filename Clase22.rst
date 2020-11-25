@@ -23,6 +23,7 @@ Consideraciones
 - Informe, presentación oral, preguntas finales
 - Recomendable mostrar avances para ir definiendo alcances
 - Entrega anticipada (2 días antes de la fecha de examen) para disponer tiempo para revisión
+- Recomendable el uso de GUI - Notar la importancia que tiene la documentación, funcionalidad y GUI en la rúbrica (con/sin GUI)
 
 
 
